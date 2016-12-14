@@ -17,6 +17,13 @@ MAX_NO_OF_BRICKWALLS = 40
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 780
 
+class Blast(pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+        j = 0
+
+
+
 class Bomb(pygame.sprite.Sprite):
 
     def __init__(self, player):
@@ -25,8 +32,36 @@ class Bomb(pygame.sprite.Sprite):
         self.image = pygame.Surface([60,60])
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.rect.x = player.rect.x
-        self.rect.y = player.rect.y
+        if player.rect.x % 60 == 0:
+            self.rect.x = player.rect.x
+
+            y_mod = player.rect.y % 60
+            y_value = min((60 - y_mod), y_mod)
+            if y_mod < 30:
+                self.rect.y = player.rect.y - y_value
+            else:
+                self.rect.y = player.rect.y + y_value
+
+        else:
+            self.rect.y = player.rect.y
+
+            x_mod = player.rect.x % 60
+            x_value = min((60 - x_mod), x_mod)
+            if x_mod < 30:
+                self.rect.x = player.rect.x - x_value
+            else:
+                self.rect.x = player.rect.x + x_value
+
+        print()
+        print(self.rect.x)
+        print(self.rect.y)
+        print(player.rect.x)
+        print (player.rect.y)
+        self.time = pygame.time.get_ticks()
+
+    def detonate(self):
+        Blast(self.rect.x, self.rect.y)
+
 
 class Player(pygame.sprite.Sprite):
     """ This class represents the bar at the bottom that the player
@@ -139,6 +174,9 @@ wall_list = pygame.sprite.Group()
 #Make the brick walls
 brickWall_list = pygame.sprite.Group()
 
+#List of all bombs
+bombs_list = pygame.sprite.Group()
+
 #Left
 wall = Wall(0, 0, 60, 780)
 wall_list.add(wall)
@@ -186,6 +224,20 @@ level = [
     [2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2],
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], ]
 
+x, y = 0, 0
+coordinates = []
+for i in range(13):
+    sub = []
+    x = 0
+    for j in range(15):
+        sub.append((x,y))
+        x += 60
+    coordinates.append(sub)
+    y += 60
+
+for i in coordinates:
+    print(i)
+
 #Creating random brick walls in empty slots
 numberOfBrickWalls = 0
 while numberOfBrickWalls < MAX_NO_OF_BRICKWALLS:
@@ -212,6 +264,15 @@ done = False
 
 while not done:
 
+
+
+    for b in bombs_list:
+        if b.time + 5000 < pygame.time.get_ticks():
+            b.detonate()
+            bombs_list.remove(b)
+            all_sprite_list.remove(b)
+
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
@@ -228,6 +289,8 @@ while not done:
             elif event.key == pygame.K_SPACE:
                 bomb = Bomb(player)
                 all_sprite_list.add(bomb)
+                bombs_list.add(bomb)
+                last_bomb_time = pygame.time.get_ticks()
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -238,6 +301,8 @@ while not done:
                 player.changespeed(0, 3)
             elif event.key == pygame.K_DOWN:
                 player.changespeed(0, -3)
+
+
 
     all_sprite_list.update()
 
