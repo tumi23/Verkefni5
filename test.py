@@ -9,19 +9,102 @@ WHITE = (255, 255, 255)
 BLUE = (50, 50, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+ORANGE = (255, 165, 0)
 
 #Global variables
-MAX_NO_OF_BRICKWALLS = 40
+MAX_NO_OF_BRICKWALLS = 0
 
 # Screen dimensions
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 780
 
-class Blast(pygame.sprite.Sprite):
+class BlastY(pygame.sprite.Sprite):
 
-    def __init__(self, x, y):
-        j = 0
+    def __init__(self, bomb):
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
+
+        bx = bomb.rect.x
+        by = bomb.rect.y
+        bi = 0
+        bj = 0
+        print()
+        for i in range(len(coordinates)):
+            if (bx, by) in coordinates[i]:
+                print(coordinates[i].index((bx, by)))
+                bj = coordinates[i].index((bx, by))
+                bi = i
+
+        right = coordinates[bi][bj]
+        for i in range(4):
+            if level[bi][bj + i] == 2 or level[bi][bj + i] == 3:
+                break
+            right = coordinates[bi][bj + i]
+
+        left = coordinates[bi][bj]
+        for i in range(4):
+            if level[bi][bj - i] == 2 or level[bi][bj - i] == 3:
+                break
+            left = coordinates[bi][bj - i]
+
+
+        print('left right')
+        print(right)
+        print(left)
+
+
+        self.image = pygame.Surface([right[0]-left[0]+60, 60])
+        self.image.fill(ORANGE)
+        self.rect = self.image.get_rect()
+        self.time = pygame.time.get_ticks()
+
+        self.rect.x = left[0]
+        self.rect.y = left[1]
+
+
+
+class BlastX(pygame.sprite.Sprite):
+
+    def __init__(self, bomb):
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+
+
+        bx = bomb.rect.x
+        by = bomb.rect.y
+        bi = 0
+        bj = 0
+        print()
+        for i in range(len(coordinates)):
+            if (bx, by) in coordinates[i]:
+                print(coordinates[i].index((bx, by)))
+                bj = coordinates[i].index((bx, by))
+                bi = i
+
+        bottom = coordinates[bi][bj]
+        for i in range(4):
+            if level[bi + i][bj] == 2 or level[bi + i][bj] == 3:
+                break
+            bottom = coordinates[bi + i][bj]
+
+        top = coordinates[bi][bj]
+        for i in range(4):
+            if level[bi - i][bj] == 2 or level[bi - i][bj] == 3:
+                break
+            top = coordinates[bi - i][bj]
+
+        print('top bottom')
+        print(top)
+        print(bottom)
+
+        self.image = pygame.Surface([60, bottom[1]-top[1]+60])
+        self.image.fill(ORANGE)
+        self.rect = self.image.get_rect()
+        self.time = pygame.time.get_ticks()
+
+        self.rect.x = top[0]
+        self.rect.y = top[1]
 
 
 class Bomb(pygame.sprite.Sprite):
@@ -55,12 +138,12 @@ class Bomb(pygame.sprite.Sprite):
         print()
         print(self.rect.x)
         print(self.rect.y)
-        print(player.rect.x)
-        print (player.rect.y)
+        print()
         self.time = pygame.time.get_ticks()
 
     def detonate(self):
-        Blast(self.rect.x, self.rect.y)
+
+        return [BlastX(self), BlastY(self)]
 
 
 class Player(pygame.sprite.Sprite):
@@ -177,6 +260,9 @@ brickWall_list = pygame.sprite.Group()
 #List of all bombs
 bombs_list = pygame.sprite.Group()
 
+#List of blasts
+blast_list = pygame.sprite.Group()
+
 #Left
 wall = Wall(0, 0, 60, 780)
 wall_list.add(wall)
@@ -260,17 +346,31 @@ all_sprite_list.add(player)
 
 clock = pygame.time.Clock()
 
-done = False
+carryOnMyWaywardSon = True
 
-while not done:
-
-
+while carryOnMyWaywardSon:
 
     for b in bombs_list:
-        if b.time + 5000 < pygame.time.get_ticks():
-            b.detonate()
+        if b.time + 3000 < pygame.time.get_ticks():
+            blast = b.detonate()
             bombs_list.remove(b)
             all_sprite_list.remove(b)
+            blast_list.add(blast)
+            all_sprite_list.add(blast)
+
+
+    for bl in blast_list:
+        if bl.time + 1500 < pygame.time.get_ticks():
+            blast_list.remove(bl)
+            all_sprite_list.remove(bl)
+
+    blast_collision_list = pygame.sprite.spritecollide(player, blast_list, False)
+    for p in blast_collision_list:
+        print("Yo Dead!")
+        # End Of Game
+        carryOnMyWaywardSon = False
+        break
+
 
 
     for event in pygame.event.get():
