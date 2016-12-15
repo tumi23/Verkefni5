@@ -1,4 +1,4 @@
-import pygame
+import pygame, pygame.mixer
 from random import randint
 
 # -- Global constants
@@ -12,7 +12,18 @@ RED = (255, 0, 0)
 ORANGE = (255, 165, 0)
 
 #Global variables
-MAX_NO_OF_BRICKWALLS = 0
+MAX_NO_OF_BRICKWALLS = 30
+
+#Sprites
+idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
+idleDown = pygame.transform.scale(idleDown, (60, 60))
+wallBlock = pygame.image.load("sprites/blocks/wall_block.png")
+wallBlock = pygame.transform.scale(wallBlock, (60, 60))
+brickBlock = pygame.image.load("sprites/blocks/brick_block.png")
+brickBlock = pygame.transform.scale(brickBlock, (60, 60))
+bomb = pygame.image.load("sprites/bomb/bomb.png")
+bomb = pygame.transform.scale(bomb, (60, 60))
+background = pygame.image.load("sprites/background/background.jpg")
 
 # Screen dimensions
 SCREEN_WIDTH = 900
@@ -55,7 +66,12 @@ class BlastY(pygame.sprite.Sprite):
 
 
         self.image = pygame.Surface([right[0]-left[0]+60, 60])
-        self.image.fill(ORANGE)
+        blastY = pygame.image.load("sprites/bomb/blastY.png")
+        blastY = pygame.transform.scale(blastY, ([right[0]-left[0]+60, 60]))
+        self.image.convert()
+        self.image.fill((255, 0, 255))
+        self.image.set_colorkey((255, 0, 255))
+        self.image.blit(blastY, (0, 0))
         self.rect = self.image.get_rect()
         self.time = pygame.time.get_ticks()
 
@@ -99,7 +115,12 @@ class BlastX(pygame.sprite.Sprite):
         print(bottom)
 
         self.image = pygame.Surface([60, bottom[1]-top[1]+60])
-        self.image.fill(ORANGE)
+        blastX = pygame.image.load("sprites/bomb/blastX.png")
+        blastX = pygame.transform.scale(blastX, ([60, bottom[1]-top[1]+60]))
+        self.image.convert()
+        self.image.fill((255, 0, 255))
+        self.image.set_colorkey((255, 0, 255))
+        self.image.blit(blastX, (0, 0))
         self.rect = self.image.get_rect()
         self.time = pygame.time.get_ticks()
 
@@ -113,7 +134,11 @@ class Bomb(pygame.sprite.Sprite):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([60,60])
-        self.image.fill(RED)
+        bomb = pygame.image.load("sprites/bomb/bomb.png")
+        bomb = pygame.transform.scale(bomb, (60, 60))
+        self.image.fill((255, 0, 255))
+        self.image.set_colorkey((255, 0, 255))
+        self.image.blit(bomb, (0, 0))
         self.rect = self.image.get_rect()
         if player.rect.x % 60 == 0:
             self.rect.x = player.rect.x
@@ -157,7 +182,10 @@ class Player(pygame.sprite.Sprite):
 
         # Set height, width
         self.image = pygame.Surface([60, 60])
-        self.image.fill(WHITE)
+        self.image.convert()
+        self.image.fill((255, 0, 255))
+        self.image.set_colorkey((255, 0, 255))
+        self.image.blit(idleDown, (0, 0))
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -214,7 +242,7 @@ class Wall(pygame.sprite.Sprite):
 
         # Make a blue wall, of the size specified in the parameters
         self.image = pygame.Surface([width, height])
-        self.image.fill(BLUE)
+        self.image.blit(wallBlock, (0, 0))
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -231,7 +259,7 @@ class BrickWall(pygame.sprite.Sprite):
 
         # Make a blue wall, of the size specified in the parameters
         self.image = pygame.Surface([width, height])
-        self.image.fill(GREEN)
+        self.image.blit(brickBlock, (0, 0))
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -244,6 +272,11 @@ pygame.init()
 
 # Create an 800x600 sized screen
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+
+# Create Background
+screen.blit(background,(0,0))
+bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+
 
 # Set the title of the window
 pygame.display.set_caption('Test')
@@ -263,31 +296,44 @@ bombs_list = pygame.sprite.Group()
 #List of blasts
 blast_list = pygame.sprite.Group()
 
+
 #Left
-wall = Wall(0, 0, 60, 780)
-wall_list.add(wall)
-all_sprite_list.add(wall)
+tY = 0
+while tY < 780:
+    wall = Wall(0, tY, 60, 60)
+    wall_list.add(wall)
+    all_sprite_list.add(wall)
+    tY += 60
 
 #Top
-wall = Wall(10, 0, 900, 60)
-wall_list.add(wall)
-all_sprite_list.add(wall)
+tX = 60
+while tX < 900:
+    wall = Wall(tX, 0, 60, 60)
+    wall_list.add(wall)
+    all_sprite_list.add(wall)
+    tX += 60
 
 #Right
-wall = Wall(SCREEN_WIDTH-60, 0, 60, 780)
-wall_list.add(wall)
-all_sprite_list.add(wall)
+tY = 0
+while tY < 780:
+    wall = Wall(SCREEN_WIDTH-60, tY, 60, 60)
+    wall_list.add(wall)
+    all_sprite_list.add(wall)
+    tY += 60
 
 #Bottom
-wall = Wall(0, SCREEN_HEIGHT-60, 900, 60)
-wall_list.add(wall)
-all_sprite_list.add(wall)
+tX = 60
+while tX < 900:
+    wall = Wall(tX, SCREEN_HEIGHT-60, 60, 60)
+    wall_list.add(wall)
+    all_sprite_list.add(wall)
+    tX += 60
 
 #Create all walls in the middle of the board
 start = 120
 for i in range(6):
     gap = 0
-    for j in range(6):
+    for j in range(5):
         wall = Wall(start, 120+gap, 60, 60)
         wall_list.add(wall)
         all_sprite_list.add(wall)
@@ -348,6 +394,8 @@ clock = pygame.time.Clock()
 
 carryOnMyWaywardSon = True
 
+
+
 while carryOnMyWaywardSon:
 
     for b in bombs_list:
@@ -360,7 +408,7 @@ while carryOnMyWaywardSon:
 
 
     for bl in blast_list:
-        if bl.time + 1500 < pygame.time.get_ticks():
+        if bl.time + 500 < pygame.time.get_ticks():
             blast_list.remove(bl)
             all_sprite_list.remove(bl)
 
@@ -391,6 +439,8 @@ while carryOnMyWaywardSon:
                 all_sprite_list.add(bomb)
                 bombs_list.add(bomb)
                 last_bomb_time = pygame.time.get_ticks()
+            elif event.key == pygame.K_ESCAPE:
+                carryOnMyWaywardSon = False
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -402,11 +452,8 @@ while carryOnMyWaywardSon:
             elif event.key == pygame.K_DOWN:
                 player.changespeed(0, -3)
 
-
-
+    screen.blit(background, (0, 0))
     all_sprite_list.update()
-
-    screen.fill(BLACK)
 
     all_sprite_list.draw(screen)
 
