@@ -3,14 +3,6 @@ from random import randint
 
 # -- Global constants
 
-# Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-BLUE = (50, 50, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-ORANGE = (255, 165, 0)
-
 #Global variables
 MAX_NO_OF_BRICKWALLS = 30
 
@@ -49,13 +41,33 @@ class BlastY(pygame.sprite.Sprite):
 
         right = coordinates[bi][bj]
         for i in range(4):
-            if level[bi][bj + i] == 2 or level[bi][bj + i] == 3:
+            if level[bi][bj + i] == 2:
+                break
+            if level[bi][bj + i] == 3:
+                ts = str(coordinates[bi][bj + i])
+                ts = ts[1:-1]
+                ts = ts.split(',')
+                for brick in brickWall_list:
+                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
+                        all_sprite_list.remove(brick)
+                        player.walls.remove(brick)
+                        level[bi][bj + i] = 0
                 break
             right = coordinates[bi][bj + i]
 
         left = coordinates[bi][bj]
         for i in range(4):
-            if level[bi][bj - i] == 2 or level[bi][bj - i] == 3:
+            if level[bi][bj - i] == 2:
+                break
+            if level[bi][bj - i] == 3:
+                ts = str(coordinates[bi][bj - 1])
+                ts = ts[1:-1]
+                ts = ts.split(',')
+                for brick in brickWall_list:
+                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
+                        all_sprite_list.remove(brick)
+                        player.walls.remove(brick)
+                        level[bi][bj - i] = 0
                 break
             left = coordinates[bi][bj - i]
 
@@ -78,8 +90,6 @@ class BlastY(pygame.sprite.Sprite):
         self.rect.x = left[0]
         self.rect.y = left[1]
 
-
-
 class BlastX(pygame.sprite.Sprite):
 
     def __init__(self, bomb):
@@ -97,16 +107,35 @@ class BlastX(pygame.sprite.Sprite):
                 print(coordinates[i].index((bx, by)))
                 bj = coordinates[i].index((bx, by))
                 bi = i
-
         bottom = coordinates[bi][bj]
         for i in range(4):
-            if level[bi + i][bj] == 2 or level[bi + i][bj] == 3:
+            if level[bi + i][bj] == 2:
+                break
+            if level[bi + i][bj] == 3:
+                ts = str(coordinates[bi + i][bj])
+                ts = ts[1:-1]
+                ts = ts.split(',')
+                for brick in brickWall_list:
+                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
+                        all_sprite_list.remove(brick)
+                        player.walls.remove(brick)
+                        level[bi + i][bj] = 0
                 break
             bottom = coordinates[bi + i][bj]
 
         top = coordinates[bi][bj]
         for i in range(4):
-            if level[bi - i][bj] == 2 or level[bi - i][bj] == 3:
+            if level[bi - i][bj] == 2:
+                break
+            if level[bi - i][bj] == 3:
+                ts = str(coordinates[bi - i][bj])
+                ts = ts[1:-1]
+                ts = ts.split(',')
+                for brick in brickWall_list:
+                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
+                        all_sprite_list.remove(brick)
+                        player.walls.remove(brick)
+                        level[bi - i][bj] = 0
                 break
             top = coordinates[bi - i][bj]
 
@@ -126,7 +155,6 @@ class BlastX(pygame.sprite.Sprite):
 
         self.rect.x = top[0]
         self.rect.y = top[1]
-
 
 class Bomb(pygame.sprite.Sprite):
 
@@ -169,7 +197,6 @@ class Bomb(pygame.sprite.Sprite):
     def detonate(self):
 
         return [BlastX(self), BlastY(self)]
-
 
 class Player(pygame.sprite.Sprite):
     """ This class represents the bar at the bottom that the player
@@ -230,7 +257,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect.bottom = block.rect.top
             else:
                 self.rect.top = block.rect.bottom
-
 
 class Wall(pygame.sprite.Sprite):
     """ Wall the player can run into. """
@@ -374,7 +400,7 @@ for i in coordinates:
 numberOfBrickWalls = 0
 while numberOfBrickWalls < MAX_NO_OF_BRICKWALLS:
     x1 = randint(0, 14)
-    y1 = randint(0,12)
+    y1 = randint(0, 12)
     if level[y1][x1] == 0:
         level[y1][x1] = 3
         brickWall = BrickWall(60*x1, 60*y1, 60, 60)
