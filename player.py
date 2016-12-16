@@ -1,17 +1,24 @@
 import  pygame
 
+idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
+idleDown = pygame.transform.scale(idleDown, (60, 60))
+
+
 class Player(pygame.sprite.Sprite):
     """ This class represents the bar at the bottom that the player
     controls. """
 
     # Constructor function
-    def __init__(self, x, y, color):
+    def __init__(self, x, y):
         # Call the parent's constructor
         super().__init__()
 
         # Set height, width
         self.image = pygame.Surface([60, 60])
-        self.image.fill(color)
+        self.image.convert()
+        self.image.fill((255, 0, 255))
+        self.image.set_colorkey((255, 0, 255))
+        self.image.blit(idleDown, (0, 0))
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -56,3 +63,4 @@ class Player(pygame.sprite.Sprite):
                 self.rect.bottom = block.rect.top
             else:
                 self.rect.top = block.rect.bottom
+
