@@ -50,7 +50,7 @@ class BlastY(pygame.sprite.Sprite):
                 for brick in brickWall_list:
                     if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
                         all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
+                        player1.walls.remove(brick)
                         level[bi][bj + i] = 0
                 break
             right = coordinates[bi][bj + i]
@@ -66,7 +66,7 @@ class BlastY(pygame.sprite.Sprite):
                 for brick in brickWall_list:
                     if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
                         all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
+                        player1.walls.remove(brick)
                         level[bi][bj - i] = 0
                 break
             left = coordinates[bi][bj - i]
@@ -118,7 +118,7 @@ class BlastX(pygame.sprite.Sprite):
                 for brick in brickWall_list:
                     if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
                         all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
+                        player1.walls.remove(brick)
                         level[bi + i][bj] = 0
                 break
             bottom = coordinates[bi + i][bj]
@@ -134,7 +134,7 @@ class BlastX(pygame.sprite.Sprite):
                 for brick in brickWall_list:
                     if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
                         all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
+                        player1.walls.remove(brick)
                         level[bi - i][bj] = 0
                 break
             top = coordinates[bi - i][bj]
@@ -411,10 +411,12 @@ while numberOfBrickWalls < MAX_NO_OF_BRICKWALLS:
 
 
 # Create the player paddle object
-player = Player(60, 60)
-player.walls = wall_list
-
-all_sprite_list.add(player)
+player1 = Player(780, 660)
+player2 = Player(60,60)
+player1.walls = wall_list
+player2.walls = wall_list
+all_sprite_list.add(player1)
+all_sprite_list.add(player2)
 
 clock = pygame.time.Clock()
 
@@ -438,9 +440,17 @@ while carryOnMyWaywardSon:
             blast_list.remove(bl)
             all_sprite_list.remove(bl)
 
-    blast_collision_list = pygame.sprite.spritecollide(player, blast_list, False)
+    blast_collision_list = pygame.sprite.spritecollide(player1, blast_list, False)
     for p in blast_collision_list:
-        print("Yo Dead!")
+        print(p)
+        print("Yo player 1, yu Dead!")
+        # End Of Game
+        carryOnMyWaywardSon = False
+        break
+    blast_collision_list = pygame.sprite.spritecollide(player2, blast_list, False)
+    for p in blast_collision_list:
+        print(p)
+        print("Yo player 2, yu  Dead!")
         # End Of Game
         carryOnMyWaywardSon = False
         break
@@ -452,31 +462,56 @@ while carryOnMyWaywardSon:
             done = True
 
         elif event.type == pygame.KEYDOWN:
+            #TODO functionize
             if event.key == pygame.K_LEFT:
-                player.changespeed(-3, 0)
+                player1.changespeed(-3, 0)
             elif event.key == pygame.K_RIGHT:
-                player.changespeed(3, 0)
+                player1.changespeed(3, 0)
             elif event.key == pygame.K_UP:
-                player.changespeed(0, -3)
+                player1.changespeed(0, -3)
             elif event.key == pygame.K_DOWN:
-                player.changespeed(0, 3)
+                player1.changespeed(0, 3)
             elif event.key == pygame.K_SPACE:
-                bomb = Bomb(player)
+                bomb = Bomb(player1)
                 all_sprite_list.add(bomb)
                 bombs_list.add(bomb)
                 last_bomb_time = pygame.time.get_ticks()
+                
+            elif event.key == pygame.K_a:
+                player2.changespeed(-3, 0)
+            elif event.key == pygame.K_d:
+                player2.changespeed(3, 0)
+            elif event.key == pygame.K_w:
+                player2.changespeed(0, -3)
+            elif event.key == pygame.K_s:
+                player2.changespeed(0, 3)
+            elif event.key == pygame.K_q:
+                bomb = Bomb(player2)
+                all_sprite_list.add(bomb)
+                bombs_list.add(bomb)
+                last_bomb_time = pygame.time.get_ticks()
+                
             elif event.key == pygame.K_ESCAPE:
                 carryOnMyWaywardSon = False
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                player.changespeed(3, 0)
+                player1.changespeed(3, 0)
             elif event.key == pygame.K_RIGHT:
-                player.changespeed(-3, 0)
+                player1.changespeed(-3, 0)
             elif event.key == pygame.K_UP:
-                player.changespeed(0, 3)
+                player1.changespeed(0, 3)
             elif event.key == pygame.K_DOWN:
-                player.changespeed(0, -3)
+                player1.changespeed(0, -3)
+                
+            elif event.key == pygame.K_a:
+                player2.changespeed(3, 0)
+            elif event.key == pygame.K_d:
+                player2.changespeed(-3, 0)
+            elif event.key == pygame.K_w:
+                player2.changespeed(0, 3)
+            elif event.key == pygame.K_s:
+                player2.changespeed(0, -3)
 
     screen.blit(background, (0, 0))
     all_sprite_list.update()
