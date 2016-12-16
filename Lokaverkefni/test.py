@@ -21,6 +21,7 @@ character = pygame.image.load("images/character/spritefeis.png")
 background2 = pygame.image.load("images/character/gudniminn.png")
 item = pygame.image.load("images/character/KEY.png")
 background2 = pygame.transform.scale(background2,(1280, 850))
+character = pygame.image.load("images/character/spritefeis.png")
 character = pygame.transform.scale(character,(32,32))
 item = pygame.transform.scale(item,(64,32))
 
