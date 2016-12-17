@@ -1,24 +1,9 @@
-import  pygame
+import pygame, math, pygame.mixer
 
 idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
 idleDown = pygame.transform.scale(idleDown, (60, 60))
 
-idleUp = pygame.image.load("sprites/bomberman/bomberman_idle_up.png")
-idleUp = pygame.transform.scale(idleUp, (60, 60))
-
-idleRight = pygame.image.load("sprites/bomberman/bomberman_idle_right.png")
-idleRight = pygame.transform.scale(idleRight, (60, 60))
-
-idleLeft = pygame.image.load("sprites/bomberman/bomberman_idle_left.png")
-idleLeft = pygame.transform.scale(idleLeft, (60, 60))
-
-idleClear = pygame.image.load("sprites/bomberman/bomberman_idle_clear.png")
-idleClear = pygame.transform.scale(idleClear, (60, 60))
-
-class Player(pygame.sprite.Sprite):
-    """ This class represents the bar at the bottom that the player
-    controls. """
-
+class Enemy(pygame.sprite.Sprite):
     # Constructor function
     def __init__(self, x, y):
         # Call the parent's constructor
@@ -43,16 +28,6 @@ class Player(pygame.sprite.Sprite):
 
     def changespeed(self, x, y):
         """ Change the speed of the player. """
-
-        '''if Direction == 'UU':
-            self.image.blit(idleUp, (0, 0))
-        elif Direction == 'DD':
-            self.image.blit(idleDown, (0, 0))
-        elif Direction == 'LL':
-            self.image.blit(idleLeft, (0, 0))
-        elif Direction == 'RR':
-            self.image.blit(idleRight, (0, 0))'''
-
         self.change_x += x
         self.change_y += y
 
@@ -85,8 +60,11 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.rect.top = block.rect.bottom
 
-    def change_sprite_left(self):
-
-        self.image.blit(idleUp, (0, 0))
-
-
+    def move_towards_player(self, player):
+        # find normalized direction vector (dx, dy) between enemy and player
+        dx, dy = self.rect.x - player.rect.x, self.rect.y - player.rect.y
+        dist = math.hypot(dx, dy)
+        dx, dy = dx / dist, dy / dist
+        # move along this normalized vector towards the player at current speed
+        self.rect.x += dx * self.speed
+        self.rect.y += dy * self.speed
