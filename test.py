@@ -40,43 +40,10 @@ screen.blit(background, (0, 0))
 bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Set the title of the window
-pygame.display.set_caption('Test')
+pygame.display.set_caption('Bomberman')
 
-# List to hold all the sprites
-all_sprite_list = pygame.sprite.Group()
-
-# Make the walls. (x_pos, y_pos, width, height)
-wall_list = pygame.sprite.Group()
-
-# Make the brick walls
-brickWall_list = pygame.sprite.Group()
-
-# List of all bombs
-bombs_list = pygame.sprite.Group()
-
-# List of blasts
-blast_list = pygame.sprite.Group()
-
-#Creating level walls that are non-destructable
-create_walls(SCREEN_WIDTH, SCREEN_HEIGHT, wall_list, all_sprite_list)
-
-# 2 - is a wall, 1 - are zones not available for brickwall, 0 - are zones available, 3 = brickwall
-level = init_level_board()
-
-#Creating coordinates for every slot in the game level
-coordinates = init_coordinates()
-
-
-#Creating random brick walls in empty slots in level
-create_random_brick_walls(MAX_NO_OF_BRICKWALLS, wall_list, brickWall_list, all_sprite_list, level)
-
-# Create the player paddle object
-player1 = Player(780, 660)
-player2 = Player(60, 60)
-player1.walls = wall_list
-player2.walls = wall_list
-all_sprite_list.add(player1)
-all_sprite_list.add(player2)
+pygame.mixer.music.load('music/32-main-theme.mp3')
+pygame.mixer.music.play(-1)
 
 
 def text_objects(text, font):
@@ -101,6 +68,41 @@ def menu_item_button(message, x_coordinates, y_coordinates, widht, height, inact
     screen.blit(t1, t2)
 
 def start_game():
+    # List to hold all the sprites
+    all_sprite_list = pygame.sprite.Group()
+
+    # Make the walls. (x_pos, y_pos, width, height)
+    wall_list = pygame.sprite.Group()
+
+    # Make the brick walls
+    brickWall_list = pygame.sprite.Group()
+
+    # List of all bombs
+    bombs_list = pygame.sprite.Group()
+
+    # List of blasts
+    blast_list = pygame.sprite.Group()
+
+    # Creating level walls that are non-destructable
+    create_walls(SCREEN_WIDTH, SCREEN_HEIGHT, wall_list, all_sprite_list)
+
+    # 2 - is a wall, 1 - are zones not available for brickwall, 0 - are zones available, 3 = brickwall
+    level = init_level_board()
+
+    # Creating coordinates for every slot in the game level
+    coordinates = init_coordinates()
+
+    # Creating random brick walls in empty slots in level
+    create_random_brick_walls(MAX_NO_OF_BRICKWALLS, wall_list, brickWall_list, all_sprite_list, level)
+
+    # Create the player paddle object
+    player1 = Player(780, 660)
+    player2 = Player(60, 60)
+    player1.walls = wall_list
+    player2.walls = wall_list
+    all_sprite_list.add(player1)
+    all_sprite_list.add(player2)
+
     game_loop(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, player2,
               blast_list)
 
@@ -120,11 +122,12 @@ def game_menu():
         screen.fill(WHITE)
         title = pygame.font.Font('freesansbold.ttf', 115)
         t1, t2 = text_objects("BomberMan", title)
-        t2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+        t2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2)-150)
         screen.blit(t1, t2)
 
-        menu_item_button("1 Player", 150, 450, 100, 50, GREEN, BR_GREEN, start_game)
-        menu_item_button("VS Game", 550, 450, 100, 50, RED, BR_RED, quit_game)
+        #TODO one player og highscore
+        menu_item_button("2 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2)-75, 100, 50, GREEN, BR_GREEN, start_game)
+        menu_item_button("Quit", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2), 100, 50, RED, BR_RED, quit_game)
 
         pygame.display.update()
         clock.tick(15)
