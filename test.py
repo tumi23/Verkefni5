@@ -1,5 +1,11 @@
 import pygame, pygame.mixer
 from random import randint
+import math
+
+from bomb import Bomb
+from player import Player
+from walls import BrickWall, Wall
+from enemy import Enemy
 
 # -- Global constants
 
@@ -7,290 +13,11 @@ from random import randint
 MAX_NO_OF_BRICKWALLS = 30
 
 #Sprites
-idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
-idleDown = pygame.transform.scale(idleDown, (60, 60))
-wallBlock = pygame.image.load("sprites/blocks/wall_block.png")
-wallBlock = pygame.transform.scale(wallBlock, (60, 60))
-brickBlock = pygame.image.load("sprites/blocks/brick_block.png")
-brickBlock = pygame.transform.scale(brickBlock, (60, 60))
-bomb = pygame.image.load("sprites/bomb/bomb.png")
-bomb = pygame.transform.scale(bomb, (60, 60))
 background = pygame.image.load("sprites/background/background.jpg")
 
 # Screen dimensions
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 780
-
-class BlastY(pygame.sprite.Sprite):
-
-    def __init__(self, bomb):
-        super().__init__()
-        pygame.sprite.Sprite.__init__(self)
-
-
-        bx = bomb.rect.x
-        by = bomb.rect.y
-        bi = 0
-        bj = 0
-        print()
-        for i in range(len(coordinates)):
-            if (bx, by) in coordinates[i]:
-                print(coordinates[i].index((bx, by)))
-                bj = coordinates[i].index((bx, by))
-                bi = i
-
-        right = coordinates[bi][bj]
-        for i in range(4):
-            if level[bi][bj + i] == 2:
-                break
-            if level[bi][bj + i] == 3:
-                ts = str(coordinates[bi][bj + i])
-                ts = ts[1:-1]
-                ts = ts.split(',')
-                for brick in brickWall_list:
-                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
-                        all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
-                        level[bi][bj + i] = 0
-                break
-            right = coordinates[bi][bj + i]
-
-        left = coordinates[bi][bj]
-        for i in range(4):
-            if level[bi][bj - i] == 2:
-                break
-            if level[bi][bj - i] == 3:
-                ts = str(coordinates[bi][bj - 1])
-                ts = ts[1:-1]
-                ts = ts.split(',')
-                for brick in brickWall_list:
-                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
-                        all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
-                        level[bi][bj - i] = 0
-                break
-            left = coordinates[bi][bj - i]
-
-
-        print('left right')
-        print(right)
-        print(left)
-
-
-        self.image = pygame.Surface([right[0]-left[0]+60, 60])
-        blastY = pygame.image.load("sprites/bomb/blastY.png")
-        blastY = pygame.transform.scale(blastY, ([right[0]-left[0]+60, 60]))
-        self.image.convert()
-        self.image.fill((255, 0, 255))
-        self.image.set_colorkey((255, 0, 255))
-        self.image.blit(blastY, (0, 0))
-        self.rect = self.image.get_rect()
-        self.time = pygame.time.get_ticks()
-
-        self.rect.x = left[0]
-        self.rect.y = left[1]
-
-class BlastX(pygame.sprite.Sprite):
-
-    def __init__(self, bomb):
-        super().__init__()
-        pygame.sprite.Sprite.__init__(self)
-
-
-        bx = bomb.rect.x
-        by = bomb.rect.y
-        bi = 0
-        bj = 0
-        print()
-        for i in range(len(coordinates)):
-            if (bx, by) in coordinates[i]:
-                print(coordinates[i].index((bx, by)))
-                bj = coordinates[i].index((bx, by))
-                bi = i
-        bottom = coordinates[bi][bj]
-        for i in range(4):
-            if level[bi + i][bj] == 2:
-                break
-            if level[bi + i][bj] == 3:
-                ts = str(coordinates[bi + i][bj])
-                ts = ts[1:-1]
-                ts = ts.split(',')
-                for brick in brickWall_list:
-                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
-                        all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
-                        level[bi + i][bj] = 0
-                break
-            bottom = coordinates[bi + i][bj]
-
-        top = coordinates[bi][bj]
-        for i in range(4):
-            if level[bi - i][bj] == 2:
-                break
-            if level[bi - i][bj] == 3:
-                ts = str(coordinates[bi - i][bj])
-                ts = ts[1:-1]
-                ts = ts.split(',')
-                for brick in brickWall_list:
-                    if brick.rect.x == int(ts[0]) and brick.rect.y == int(ts[1][1:]):
-                        all_sprite_list.remove(brick)
-                        player.walls.remove(brick)
-                        level[bi - i][bj] = 0
-                break
-            top = coordinates[bi - i][bj]
-
-        print('top bottom')
-        print(top)
-        print(bottom)
-
-        self.image = pygame.Surface([60, bottom[1]-top[1]+60])
-        blastX = pygame.image.load("sprites/bomb/blastX.png")
-        blastX = pygame.transform.scale(blastX, ([60, bottom[1]-top[1]+60]))
-        self.image.convert()
-        self.image.fill((255, 0, 255))
-        self.image.set_colorkey((255, 0, 255))
-        self.image.blit(blastX, (0, 0))
-        self.rect = self.image.get_rect()
-        self.time = pygame.time.get_ticks()
-
-        self.rect.x = top[0]
-        self.rect.y = top[1]
-
-class Bomb(pygame.sprite.Sprite):
-
-    def __init__(self, player):
-        super().__init__()
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface([60,60])
-        bomb = pygame.image.load("sprites/bomb/bomb.png")
-        bomb = pygame.transform.scale(bomb, (60, 60))
-        self.image.fill((255, 0, 255))
-        self.image.set_colorkey((255, 0, 255))
-        self.image.blit(bomb, (0, 0))
-        self.rect = self.image.get_rect()
-        if player.rect.x % 60 == 0:
-            self.rect.x = player.rect.x
-
-            y_mod = player.rect.y % 60
-            y_value = min((60 - y_mod), y_mod)
-            if y_mod < 30:
-                self.rect.y = player.rect.y - y_value
-            else:
-                self.rect.y = player.rect.y + y_value
-
-        else:
-            self.rect.y = player.rect.y
-
-            x_mod = player.rect.x % 60
-            x_value = min((60 - x_mod), x_mod)
-            if x_mod < 30:
-                self.rect.x = player.rect.x - x_value
-            else:
-                self.rect.x = player.rect.x + x_value
-
-        print()
-        print(self.rect.x)
-        print(self.rect.y)
-        print()
-        self.time = pygame.time.get_ticks()
-
-    def detonate(self):
-
-        return [BlastX(self), BlastY(self)]
-
-class Player(pygame.sprite.Sprite):
-    """ This class represents the bar at the bottom that the player
-    controls. """
-
-    # Constructor function
-    def __init__(self, x, y):
-        # Call the parent's constructor
-        super().__init__()
-
-        # Set height, width
-        self.image = pygame.Surface([60, 60])
-        self.image.convert()
-        self.image.fill((255, 0, 255))
-        self.image.set_colorkey((255, 0, 255))
-        self.image.blit(idleDown, (0, 0))
-
-        # Make our top-left corner the passed-in location.
-        self.rect = self.image.get_rect()
-        self.rect.y = y
-        self.rect.x = x
-
-        # Set speed vector
-        self.change_x = 0
-        self.change_y = 0
-        self.walls = None
-
-    def changespeed(self, x, y):
-        """ Change the speed of the player. """
-        self.change_x += x
-        self.change_y += y
-
-    def update(self):
-        """ Update the player position. """
-        # Move left/right
-        self.rect.x += self.change_x
-
-        # Did this update cause us to hit a wall?
-        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
-        for block in block_hit_list:
-            # If we are moving right, set our right side to the left side of
-            # the item we hit
-            if self.change_x > 0:
-                self.rect.right = block.rect.left
-            else:
-                # Otherwise if we are moving left, do the opposite.
-                self.rect.left = block.rect.right
-
-        # Move up/down
-        self.rect.y += self.change_y
-
-        # Check and see if we hit anything
-        block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
-        for block in block_hit_list:
-
-            # Reset our position based on the top/bottom of the object.
-            if self.change_y > 0:
-                self.rect.bottom = block.rect.top
-            else:
-                self.rect.top = block.rect.bottom
-
-class Wall(pygame.sprite.Sprite):
-    """ Wall the player can run into. """
-
-    def __init__(self, x, y, width, height):
-        """ Constructor for the wall that the player can run into. """
-        # Call the parent's constructor
-        super().__init__()
-
-        # Make a blue wall, of the size specified in the parameters
-        self.image = pygame.Surface([width, height])
-        self.image.blit(wallBlock, (0, 0))
-
-        # Make our top-left corner the passed-in location.
-        self.rect = self.image.get_rect()
-        self.rect.y = y
-        self.rect.x = x
-
-class BrickWall(pygame.sprite.Sprite):
-    """ Wall the player can run into. """
-
-    def __init__(self, x, y, width, height):
-        """ Constructor for the wall that the player can run into. """
-        # Call the parent's constructor
-        super().__init__()
-
-        # Make a blue wall, of the size specified in the parameters
-        self.image = pygame.Surface([width, height])
-        self.image.blit(brickBlock, (0, 0))
-
-        # Make our top-left corner the passed-in location.
-        self.rect = self.image.get_rect()
-        self.rect.y = y
-        self.rect.x = x
 
 
 # Call this function so the Pygame library can initialize itself
@@ -305,7 +32,7 @@ bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 # Set the title of the window
-pygame.display.set_caption('Test')
+pygame.display.set_caption('BomberMan')
 
 # List to hold all the sprites
 all_sprite_list = pygame.sprite.Group()
@@ -414,19 +141,25 @@ while numberOfBrickWalls < MAX_NO_OF_BRICKWALLS:
 player = Player(60, 60)
 player.walls = wall_list
 
+
+#Create Enemy
+enemy = Enemy(60,60)
+enemy.walls = wall_list
+
+all_sprite_list.add(enemy)
+
+
 all_sprite_list.add(player)
 
 clock = pygame.time.Clock()
 
 carryOnMyWaywardSon = True
 
-
-
 while carryOnMyWaywardSon:
 
     for b in bombs_list:
         if b.time + 3000 < pygame.time.get_ticks():
-            blast = b.detonate()
+            blast = b.detonate(level, brickWall_list, all_sprite_list, player)
             bombs_list.remove(b)
             all_sprite_list.remove(b)
             blast_list.add(blast)
@@ -445,21 +178,43 @@ while carryOnMyWaywardSon:
         carryOnMyWaywardSon = False
         break
 
+    for b in bombs_list:
+        bomb_blast_list = pygame.sprite.spritecollide(b, blast_list, False)
+        for p in blast_collision_list:
+            print("Yo Dead!")
+            p.detonte()
+            # End Of Game
+            carryOnMyWaywardSon = False
+            break
 
+
+
+    #enemy.move_towards_player(player)
 
     for event in pygame.event.get():
+        print()
+        print ('for event loop')
+
         if event.type == pygame.QUIT:
-            done = True
+            carryOnMyWaywardSon = False
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                player.changespeed(-3, 0)
+                print()
+                print('down-left')
+                player.changespeed(-3, 0,'LL')
             elif event.key == pygame.K_RIGHT:
-                player.changespeed(3, 0)
+                print()
+                print('down-right')
+                player.changespeed(3, 0,'RR')
             elif event.key == pygame.K_UP:
-                player.changespeed(0, -3)
+                print()
+                print('down-up')
+                player.changespeed(0, -3,'UU')
             elif event.key == pygame.K_DOWN:
-                player.changespeed(0, 3)
+                print()
+                print('down-down')
+                player.changespeed(0, 3, 'DD')
             elif event.key == pygame.K_SPACE:
                 bomb = Bomb(player)
                 all_sprite_list.add(bomb)
@@ -470,13 +225,23 @@ while carryOnMyWaywardSon:
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                player.changespeed(3, 0)
+                print()
+                print('up-left')
+                player.changespeed(3, 0,'')
             elif event.key == pygame.K_RIGHT:
-                player.changespeed(-3, 0)
+                print()
+                print('up-right')
+                player.changespeed(-3, 0,'')
             elif event.key == pygame.K_UP:
-                player.changespeed(0, 3)
+                print()
+                print('up-up')
+                player.changespeed(0, 3,'')
             elif event.key == pygame.K_DOWN:
-                player.changespeed(0, -3)
+                print()
+                print('up-down')
+                player.changespeed(0, -3,'')
+            elif event.key == pygame.K_ESCAPE:
+                carryOnMyWaywardSon = False
 
     screen.blit(background, (0, 0))
     all_sprite_list.update()
