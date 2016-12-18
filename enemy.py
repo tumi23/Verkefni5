@@ -1,6 +1,6 @@
 import pygame, math, pygame.mixer
 
-idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
+idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_up.png")
 idleDown = pygame.transform.scale(idleDown, (60, 60))
 
 class Enemy(pygame.sprite.Sprite):
@@ -22,49 +22,67 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x = x
 
         # Set speed vector
-        self.change_x = 0
-        self.change_y = 0
+        self.change_x = 1
+        self.change_y = 1
         self.walls = None
+        self.Down = True
+        self.Left = True
 
     def changespeed(self, x, y):
-        """ Change the speed of the player. """
         self.change_x += x
         self.change_y += y
 
+        if x == 0 or y == 0:
+            print('no speed')
+            self.reverse_direction()
+
     def update(self):
-        """ Update the player position. """
-        # Move left/right
+        #Left - Right
         self.rect.x += self.change_x
 
-        # Did this update cause us to hit a wall?
         block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
         for block in block_hit_list:
-            # If we are moving right, set our right side to the left side of
-            # the item we hit
             if self.change_x > 0:
+                self.Left = False
                 self.rect.right = block.rect.left
             else:
-                # Otherwise if we are moving left, do the opposite.
+                self.Left = True
                 self.rect.left = block.rect.right
 
-        # Move up/down
+        # Up - Down
         self.rect.y += self.change_y
 
-        # Check and see if we hit anything
         block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
         for block in block_hit_list:
 
-            # Reset our position based on the top/bottom of the object.
             if self.change_y > 0:
+                self.Down = False
                 self.rect.bottom = block.rect.top
             else:
+                self.Down = True
                 self.rect.top = block.rect.bottom
 
-    def move_towards_player(self, player):
-        # find normalized direction vector (dx, dy) between enemy and player
-        dx, dy = self.rect.x - player.rect.x, self.rect.y - player.rect.y
-        dist = math.hypot(dx, dy)
-        dx, dy = dx / dist, dy / dist
-        # move along this normalized vector towards the player at current speed
-        self.rect.x += dx * self.speed
-        self.rect.y += dy * self.speed
+        if not self.Left:
+            self.change_x = -1
+        elif not self.Down:
+            self.change_y = -1
+        elif self.Left:
+            self.change_x = 1
+        elif self.Down:
+            self.change_y = 1
+
+
+
+    def reverse_direction(self):
+            x = self.change_x
+            y = self.change_y
+            if x < 0:
+                self.change_x = 1
+            else:
+                self.change_x = -1
+
+            if y < 0:
+                self.change_y = 1
+            else:
+                self.change_y = -1
+

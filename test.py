@@ -1,9 +1,7 @@
-
-import pygame, pygame.mixer
+import pygame, pygame.mixer, time
 from player import Player
-#from game_loop import game_loop
 from bomb import Bomb
-from init_level import create_walls, create_random_brick_walls, init_level_board, init_coordinates
+from init_level import create_walls, create_random_brick_walls, init_level_board, init_coordinates, create_random_enemies
 
 # -- Global constants
 BLACK = (255,255,255)
@@ -46,6 +44,17 @@ pygame.display.set_caption('Bomberman')
 pygame.mixer.music.load('music/32-main-theme.mp3')
 pygame.mixer.music.play(-1)
 
+def display_message(string):
+    largeText = pygame.font.Font('freesansbold.ttf', 115)
+    TextSurf, TextRect = text_objects(string, largeText)
+    TextRect.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))
+    screen.blit(TextSurf, TextRect)
+
+    pygame.display.update()
+
+    pygame.time.wait(5000)
+
+
 
 def text_objects(text, font):
     textSurface = font.render(text, True, BLACK)
@@ -68,7 +77,7 @@ def menu_item_button(message, x_coordinates, y_coordinates, widht, height, inact
     t2.center = ( (x_coordinates + (widht / 2)), (y_coordinates + (height / 2)) )
     screen.blit(t1, t2)
 
-def start_game():
+def start_game_two_player_game():
     # List to hold all the sprites
     all_sprite_list = pygame.sprite.Group()
 
@@ -104,8 +113,50 @@ def start_game():
     all_sprite_list.add(player1)
     all_sprite_list.add(player2)
 
-    game_loop(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, player2,
+    game_loop_two_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, player2,
               blast_list)
+
+def start_game_one_player_game():
+    # List to hold all the sprites
+    all_sprite_list = pygame.sprite.Group()
+
+    # Make the walls. (x_pos, y_pos, width, height)
+    wall_list = pygame.sprite.Group()
+
+    # Make the brick walls
+    brickWall_list = pygame.sprite.Group()
+
+    # List of all bombs
+    bombs_list = pygame.sprite.Group()
+
+    # List of blasts
+    blast_list = pygame.sprite.Group()
+
+    # Creating level walls that are non-destructable
+    create_walls(SCREEN_WIDTH, SCREEN_HEIGHT, wall_list, all_sprite_list)
+
+    # 2 - is a wall, 1 - are zones not available for brickwall, 0 - are zones available, 3 = brickwall
+    level = init_level_board()
+
+    # Creating coordinates for every slot in the game level
+    coordinates = init_coordinates()
+
+    # Creating random brick walls in empty slots in level
+    create_random_brick_walls(MAX_NO_OF_BRICKWALLS, wall_list, brickWall_list, all_sprite_list, level)
+
+    # Create the player paddle object
+    player1 = Player(60, 60)
+    player2 = None
+    player1.walls = wall_list
+    all_sprite_list.add(player1)
+
+    #Create random enemies
+    enemies_list = pygame.sprite.Group()
+    create_random_enemies(5, wall_list, enemies_list, all_sprite_list, level)
+
+    game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list,
+              blast_list)
+
 
 def quit_game():
     pygame.quit()
@@ -125,17 +176,18 @@ def game_menu():
         screen.blit(t1, t2)
 
         #TODO one player og highscore
-        menu_item_button("2 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2)-75, 100, 50, GREEN, BR_GREEN, start_game)
-        menu_item_button("Quit", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2), 100, 50, RED, BR_RED, quit_game)
+        menu_item_button("1 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2)-75, 100, 50, GREEN, BR_GREEN, start_game_one_player_game)
+        menu_item_button("2 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2), 100, 50, GREEN, BR_GREEN, start_game_two_player_game)
+        menu_item_button("Quit", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+75, 100, 50, RED, BR_RED, quit_game)
+
 
         pygame.display.update()
         clock.tick(15)
 
 
 
-def game_loop(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, player2, blast_list):
+def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, player2, blast_list):
     carryOnMyWaywardSon = True
-
     while carryOnMyWaywardSon:
 
         for b in bombs_list:
@@ -153,16 +205,13 @@ def game_loop(screen, background, clock, bombs_list, level, brickWall_list, all_
 
         blast_collision_list = pygame.sprite.spritecollide(player1, blast_list, False)
         for p in blast_collision_list:
-            print(p)
-            print("Yo player 1, yu Dead!")
-            # End Of Game
+            print("Yo player 1, yu  Dead!")
             carryOnMyWaywardSon = False
             break
+
         blast_collision_list = pygame.sprite.spritecollide(player2, blast_list, False)
         for p in blast_collision_list:
-            print(p)
             print("Yo player 2, yu  Dead!")
-            # End Of Game
             carryOnMyWaywardSon = False
             break
 
@@ -222,6 +271,7 @@ def game_loop(screen, background, clock, bombs_list, level, brickWall_list, all_
                 elif event.key == pygame.K_s:
                     player2.changespeed(0, -3)
 
+
         screen.blit(background, (0, 0))
         all_sprite_list.update()
 
@@ -230,6 +280,89 @@ def game_loop(screen, background, clock, bombs_list, level, brickWall_list, all_
         pygame.display.flip()
 
         clock.tick(60)
+
+
+def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list, blast_list):
+    carryOnMyWaywardSon = True
+    while carryOnMyWaywardSon:
+
+        for b in bombs_list:
+            if b.time + 3000 < pygame.time.get_ticks():
+                blast = b.detonate(level, brickWall_list, all_sprite_list, player1)
+                bombs_list.remove(b)
+                all_sprite_list.remove(b)
+                blast_list.add(blast)
+                all_sprite_list.add(blast)
+
+        for bl in blast_list:
+            if bl.time + 500 < pygame.time.get_ticks():
+                blast_list.remove(bl)
+                all_sprite_list.remove(bl)
+
+        blast_collision_list = pygame.sprite.spritecollide(player1, blast_list, False)
+        for p in blast_collision_list:
+            print("Yo player 1, yu  Dead!")
+            carryOnMyWaywardSon = False
+            break
+
+        for enemy in enemies_list:
+            blast_collision_enemies_list = pygame.sprite.spritecollide(enemy, blast_list, False)
+            for p in blast_collision_list:
+                print('ENEMY GOT HIT')
+                #enemies_list.remove(p)
+                #all_sprite_list.remove(p)
+
+        player_enemy_collission_list = pygame.sprite.spritecollide(player1, enemies_list, False)
+        for p in player_enemy_collission_list:
+            print('you dead')
+            carryOnMyWaywardSon = False
+            break
+
+
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+            elif event.type == pygame.KEYDOWN:
+                # TODO functionize
+                if event.key == pygame.K_LEFT:
+                    player1.changespeed(-3, 0)
+                elif event.key == pygame.K_RIGHT:
+                    player1.changespeed(3, 0)
+                elif event.key == pygame.K_UP:
+                    player1.changespeed(0, -3)
+                elif event.key == pygame.K_DOWN:
+                    player1.changespeed(0, 3)
+                elif event.key == pygame.K_SPACE:
+                    bomb = Bomb(player1)
+                    all_sprite_list.add(bomb)
+                    bombs_list.add(bomb)
+                    last_bomb_time = pygame.time.get_ticks()
+                elif event.key == pygame.K_ESCAPE:
+                    carryOnMyWaywardSon = False
+
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    player1.changespeed(3, 0)
+                elif event.key == pygame.K_RIGHT:
+                    player1.changespeed(-3, 0)
+                elif event.key == pygame.K_UP:
+                    player1.changespeed(0, 3)
+                elif event.key == pygame.K_DOWN:
+                    player1.changespeed(0, -3)
+
+
+        screen.blit(background, (0, 0))
+        all_sprite_list.update()
+
+        all_sprite_list.draw(screen)
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
 
 
 clock = pygame.time.Clock()

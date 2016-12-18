@@ -1,7 +1,7 @@
 from walls import BrickWall, Wall
 
 from random import randint
-
+from enemy import Enemy
 def create_walls(SCREEN_WIDTH, SCREEN_HEIGHT, wall_list, all_sprite_list):
     # Left
     tY = 0
@@ -92,3 +92,19 @@ def init_coordinates():
         coordinates.append(sub)
         y += 60
     return coordinates
+
+
+def create_random_enemies(Number_of_enemies, wall_list, enemies_list, all_sprite_list, level):
+
+    numberOfEnemies = 0
+    while numberOfEnemies < Number_of_enemies:
+        x1 = randint(0, 14)
+        y1 = randint(0, 12)
+        if level[y1][x1] == 0:
+            level[y1][x1] = 3
+            enemy = Enemy(60 * x1, 60 * y1)
+            enemies_list.add(enemy)
+            enemy.walls = wall_list
+            all_sprite_list.add(enemy)
+            numberOfEnemies += 1
+
