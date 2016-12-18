@@ -12,6 +12,8 @@ BR_GREEN = (0, 255,0)
 BR_RED = (255,0,0)
 # Global variables
 MAX_NO_OF_BRICKWALLS = 30
+NUMBER_OF_ENEMIES_BEGINNING = 1
+current_score = 0
 
 # Sprites
 idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
@@ -152,16 +154,18 @@ def start_game_one_player_game():
 
     #Create random enemies
     enemies_list = pygame.sprite.Group()
-    create_random_enemies(5, wall_list, enemies_list, all_sprite_list, level)
+    create_random_enemies(NUMBER_OF_ENEMIES_BEGINNING, wall_list, enemies_list, all_sprite_list, level)
 
     game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list,
-              blast_list)
+              blast_list, NUMBER_OF_ENEMIES_BEGINNING)
 
 
 def quit_game():
     pygame.quit()
 
 def game_menu():
+    global  NUMBER_OF_ENEMIES_BEGINNING
+    NUMBER_OF_ENEMIES_BEGINNING += 2
     while True:
         for event in pygame.event.get():
             print(event)
@@ -282,8 +286,11 @@ def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall
         clock.tick(60)
 
 
-def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list, blast_list):
+def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list, blast_list, no_enemies_in_game):
+    global current_score
     carryOnMyWaywardSon = True
+    won_game = False
+    no_enemies = no_enemies_in_game
     while carryOnMyWaywardSon:
 
         for b in bombs_list:
@@ -305,12 +312,17 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
             carryOnMyWaywardSon = False
             break
 
-        for enemy in enemies_list:
-            blast_collision_enemies_list = pygame.sprite.spritecollide(enemy, blast_list, False)
-            for p in blast_collision_list:
+        for blast in blast_list:
+            blast_collision_enemies_list = pygame.sprite.spritecollide(blast, enemies_list, False)
+            for p in blast_collision_enemies_list:
                 print('ENEMY GOT HIT')
-                #enemies_list.remove(p)
-                #all_sprite_list.remove(p)
+                current_score += 100
+                no_enemies -= 1
+                enemies_list.remove(p)
+                all_sprite_list.remove(p)
+                if no_enemies == 0:
+                    won_game = True
+                    carryOnMyWaywardSon = False
 
         player_enemy_collission_list = pygame.sprite.spritecollide(player1, enemies_list, False)
         for p in player_enemy_collission_list:
@@ -362,6 +374,9 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
         pygame.display.flip()
 
         clock.tick(60)
+
+        if not carryOnMyWaywardSon and not won_game:
+            current_score = 0
 
 
 
