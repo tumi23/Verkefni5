@@ -12,9 +12,6 @@ idleRight = pygame.transform.scale(idleRight, (60, 60))
 idleLeft = pygame.image.load("sprites/bomberman/bomberman_idle_left.png")
 idleLeft = pygame.transform.scale(idleLeft, (60, 60))
 
-idleClear = pygame.image.load("sprites/bomberman/bomberman_idle_clear.png")
-idleClear = pygame.transform.scale(idleClear, (60, 60))
-
 class Player(pygame.sprite.Sprite):
     """ This class represents the bar at the bottom that the player
     controls. """

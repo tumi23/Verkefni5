@@ -52,7 +52,7 @@ class BlastY(pygame.sprite.Sprite):
             if level[bi][bj - i] == 2:
                 break
             if level[bi][bj - i] == 3:
-                ts = str(coordinates[bi][bj - 1])
+                ts = str(coordinates[bi][bj - i])
                 ts = ts[1:-1]
                 ts = ts.split(',')
                 for brick in brickWall_list:
@@ -63,6 +63,12 @@ class BlastY(pygame.sprite.Sprite):
                 break
             left = coordinates[bi][bj - i]
 
+        print('left')
+        print (left)
+        print('right')
+        print(right)
+
+        print(coordinates)
 
         self.image = pygame.Surface([right[0]-left[0]+60, 60])
         blastY = pygame.image.load("sprites/bomb/blastY.png")
@@ -124,6 +130,10 @@ class BlastX(pygame.sprite.Sprite):
                 break
             top = coordinates[bi - i][bj]
 
+        print('top')
+        print(top)
+        print('bottom')
+        print(bottom)
         self.image = pygame.Surface([60, bottom[1]-top[1]+60])
         blastX = pygame.image.load("sprites/bomb/blastX.png")
         blastX = pygame.transform.scale(blastX, ([60, bottom[1]-top[1]+60]))
