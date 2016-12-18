@@ -2,6 +2,14 @@ import pygame, pygame.mixer, time
 from player import Player
 from bomb import Bomb
 from init_level import create_walls, create_random_brick_walls, init_level_board, init_coordinates, create_random_enemies
+from input_box import *
+from tinydb import TinyDB, where
+
+db = TinyDB('db/db.json')
+#db.purge_table('HighScore')
+table = db.table('HighScore')
+#table.insert({'value': 1000, 'Name': 'MyName'})
+#print(table.all())
 
 # -- Global constants
 BLACK = (255,255,255)
@@ -159,6 +167,46 @@ def start_game_one_player_game():
     game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list,
               blast_list, NUMBER_OF_ENEMIES_BEGINNING)
 
+def high_score_screen():
+    global table
+    r = []
+    for i in table.all():
+        print(i['value'])
+        print(i['Name'])
+        r.append((i['Name'], i['value']))
+    l = table.all()
+    print (r)
+    p = sorted(r, key=lambda x: (-x[1], x[0]))
+    print(p)
+
+
+
+    while True:
+        for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        screen.fill(WHITE)
+        title = pygame.font.Font('freesansbold.ttf', 115)
+        t1, t2 = text_objects("Highscores", title)
+        t2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2) - 300)
+        screen.blit(t1, t2)
+
+        for i in range(10):
+            try:
+                string = str(p[i][0]) + ' - ' + str(p[i][1])
+                score = pygame.font.Font('freesansbold.ttf', 30)
+                t1, t2 = text_objects(string, score)
+                t2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT) - 550 + i * 35)
+                screen.blit(t1, t2)
+            except:
+                continue
+
+        menu_item_button("Back", (SCREEN_WIDTH / 2) - 50, (SCREEN_HEIGHT / 2) + 300, 100, 50, RED, BR_RED, game_menu)
+
+        pygame.display.update()
+        clock.tick(15)
 
 def quit_game():
     pygame.quit()
@@ -180,9 +228,10 @@ def game_menu():
         screen.blit(t1, t2)
 
         #TODO one player og highscore
-        menu_item_button("1 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2)-75, 100, 50, GREEN, BR_GREEN, start_game_one_player_game)
-        menu_item_button("2 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2), 100, 50, GREEN, BR_GREEN, start_game_two_player_game)
-        menu_item_button("Quit", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+75, 100, 50, RED, BR_RED, quit_game)
+        menu_item_button("1 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2)-75, 130, 50, GREEN, BR_GREEN, start_game_one_player_game)
+        menu_item_button("2 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2), 130, 50, GREEN, BR_GREEN, start_game_two_player_game)
+        menu_item_button("Highscores", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+75, 130, 50, GREEN, BR_GREEN, high_score_screen)
+        menu_item_button("Quit", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+150, 130, 50, RED, BR_RED, quit_game)
 
 
         pygame.display.update()
@@ -286,8 +335,9 @@ def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall
         clock.tick(60)
 
 
+
 def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list, blast_list, no_enemies_in_game):
-    global current_score
+    global current_score, table
     carryOnMyWaywardSon = True
     won_game = False
     no_enemies = no_enemies_in_game
@@ -329,9 +379,6 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
             print('you dead')
             carryOnMyWaywardSon = False
             break
-
-
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -376,6 +423,9 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
         clock.tick(60)
 
         if not carryOnMyWaywardSon and not won_game:
+            name_of_player = ask(screen, 'What is your name?')
+            print(name_of_player)
+            table.insert({'value': current_score, 'Name': name_of_player})
             current_score = 0
 
 
