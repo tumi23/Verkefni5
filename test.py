@@ -23,6 +23,7 @@ BR_RED = (255,0,0)
 MAX_NO_OF_BRICKWALLS = 30
 NUMBER_OF_ENEMIES_BEGINNING = 1
 current_score = 0
+won_game = False
 
 # Sprites
 idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
@@ -213,14 +214,18 @@ def quit_game():
     pygame.quit()
 
 def game_menu():
-    global  NUMBER_OF_ENEMIES_BEGINNING
-    NUMBER_OF_ENEMIES_BEGINNING += 2
+    global  NUMBER_OF_ENEMIES_BEGINNING, won_game
     while True:
         for event in pygame.event.get():
             print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+
+        if won_game:
+            won_game = False
+            NUMBER_OF_ENEMIES_BEGINNING += 2
+            start_game_one_player_game
         screen.fill(WHITE)
         title = pygame.font.Font('freesansbold.ttf', 115)
         t1, t2 = text_objects("BomberMan", title)
@@ -237,7 +242,7 @@ def game_menu():
 
 def playagain_menu():
     global  NUMBER_OF_ENEMIES_BEGINNING
-    NUMBER_OF_ENEMIES_BEGINNING += 2
+    #NUMBER_OF_ENEMIES_BEGINNING += 2
     while True:
         for event in pygame.event.get():
             print(event)
@@ -360,9 +365,8 @@ def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall
 
 
 def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, enemies_list, blast_list, no_enemies_in_game):
-    global current_score, table
+    global current_score, table, won_game
     carryOnMyWaywardSon = True
-    won_game = False
     no_enemies = no_enemies_in_game
     while carryOnMyWaywardSon:
 
@@ -452,4 +456,4 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
             current_score = 0
 
 clock = pygame.time.Clock()
-playagain_menu()
+game_menu()
