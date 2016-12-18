@@ -5,31 +5,24 @@ enemy = pygame.image.load("sprites/bomberman/bomberman_enemy.png")
 enemy = pygame.transform.scale(enemy, (60, 60))
 
 class Enemy(pygame.sprite.Sprite):
-    # Constructor function
     def __init__(self, x, y):
-        # Call the parent's constructor
         super().__init__()
-
-        # Set height, width
+        # Setting the surface of the enemy and blit-ing a sprite on top of it
         self.image = pygame.Surface([60, 60])
         self.image.convert()
         self.image.fill((255, 0, 255))
         self.image.set_colorkey((255, 0, 255))
         self.image.blit(enemy, (0, 0))
-
-        # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
         self.rect.y = y
         self.rect.x = x
-
-        # Set speed vector
+        # Adding the speed of the enemy
         self.change_x = 1
         self.change_y = 1
-        self.walls = None
         self.Down = True
         self.Left = True
 
-    def changespeed(self, x, y):
+    def change_speed(self, x, y):
         self.change_x += x
         self.change_y += y
 
@@ -70,8 +63,6 @@ class Enemy(pygame.sprite.Sprite):
             self.change_x = 1
         elif self.Down:
             self.change_y = 1
-
-
 
     def reverse_direction(self):
             x = self.change_x

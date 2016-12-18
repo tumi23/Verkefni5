@@ -5,6 +5,8 @@ from enemy import Enemy
 
 
 def create_walls(SCREEN_WIDTH, SCREEN_HEIGHT, wall_list, all_sprite_list):
+    # Creating boundary walls
+
     # Left
     tY = 0
     while tY < 780:

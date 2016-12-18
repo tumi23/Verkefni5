@@ -21,15 +21,20 @@ class BlastY(pygame.sprite.Sprite):
         by = bomb.rect.y
         bi = 0
         bj = 0
+
         for i in range(len(coordinates)):
             if (bx, by) in coordinates[i]:
                 bj = coordinates[i].index((bx, by))
                 bi = i
 
         right = coordinates[bi][bj]
+        # For loop that goes through all the blocks in each direction to check for a wall
+        # or brick wall and then get the coordinates for when to stop in this case the right blast
         for i in range(4):
+            # If a wall is found stop the loop as the blast can't go through them
             if level[bi][bj + i] == 2:
                 break
+            # If a brick wall is found first destroy the block from the brickwall list and then break the instance
             if level[bi][bj + i] == 3:
                 ts = str(coordinates[bi][bj + i])
                 ts = ts[1:-1]
@@ -43,9 +48,13 @@ class BlastY(pygame.sprite.Sprite):
             right = coordinates[bi][bj + i]
 
         left = coordinates[bi][bj]
+        # For loop that goes through all the blocks in each direction to check for a wall
+        # or brick wall and then get the coordinates for when to stop in this case the left blast
         for i in range(4):
+            # If a wall is found stop the loop as the blast can't go through them
             if level[bi][bj - i] == 2:
                 break
+            # If a brick wall is found first destroy the block from the brickwall list and then break the instance
             if level[bi][bj - i] == 3:
                 ts = str(coordinates[bi][bj - i])
                 ts = ts[1:-1]
@@ -67,7 +76,6 @@ class BlastY(pygame.sprite.Sprite):
         self.image.blit(blastY, (0, 0))
         self.rect = self.image.get_rect()
         self.time = pygame.time.get_ticks()
-
         self.rect.x = left[0]
         self.rect.y = left[1]
 
@@ -87,9 +95,13 @@ class BlastX(pygame.sprite.Sprite):
                 bj = coordinates[i].index((bx, by))
                 bi = i
         bottom = coordinates[bi][bj]
+        # For loop that goes through all the blocks in each direction to check for a wall
+        # or brick wall and then get the coordinates for when to stop in this case the top blast
         for i in range(4):
+            # If a wall is found stop the loop as the blast can't go through them
             if level[bi + i][bj] == 2:
                 break
+            # If a brick wall is found first destroy the block from the brickwall list and then break the instance
             if level[bi + i][bj] == 3:
                 ts = str(coordinates[bi + i][bj])
                 ts = ts[1:-1]
@@ -103,9 +115,13 @@ class BlastX(pygame.sprite.Sprite):
             bottom = coordinates[bi + i][bj]
 
         top = coordinates[bi][bj]
+        # For loop that goes through all the blocks in each direction to check for a wall
+        # or brick wall and then get the coordinates for when to stop in this case the bottom blast
         for i in range(4):
+            # If a wall is found stop the loop as the blast can't go through them
             if level[bi - i][bj] == 2:
                 break
+            # If a brick wall is found first destroy the block from the brickwall list and then break the instance
             if level[bi - i][bj] == 3:
                 ts = str(coordinates[bi - i][bj])
                 ts = ts[1:-1]

@@ -228,32 +228,6 @@ def game_menu():
         pygame.display.update()
         clock.tick(15)
 
-def playagain_menu():
-    global  NUMBER_OF_ENEMIES_BEGINNING
-    #NUMBER_OF_ENEMIES_BEGINNING += 2
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-        screen.fill(WHITE)
-        title = pygame.font.Font('freesansbold.ttf', 115)
-        t1, t2 = text_objects("BomberMan", title)
-        t2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2)-150)
-        screen.blit(t1, t2)
-
-        myfont = pygame.font.Font('freesansbold.ttf', 100)
-        label = myfont.render("Score: " + str(current_score), 30, (255, 255, 255))
-        screen.blit(label, (250, SCREEN_HEIGHT - 500))
-        #TODO one player og highscore
-        menu_item_button("Play Again?", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2), 100, 50, GREEN, BR_GREEN, start_game_one_player_game)
-        menu_item_button("Quit to main menu?", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+75, 100, 50, RED, BR_RED, game_menu())
-
-
-        pygame.display.update()
-        clock.tick(15)
-
 def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, player2, blast_list):
     carryOnMyWaywardSon = True
     while carryOnMyWaywardSon:
@@ -290,13 +264,13 @@ def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall
             elif event.type == pygame.KEYDOWN:
                 # TODO functionize
                 if event.key == pygame.K_LEFT:
-                    player1.changespeed(-3, 0)
+                    player1.change_speed(-3, 0)
                 elif event.key == pygame.K_RIGHT:
-                    player1.changespeed(3, 0)
+                    player1.change_speed(3, 0)
                 elif event.key == pygame.K_UP:
-                    player1.changespeed(0, -3)
+                    player1.change_speed(0, -3)
                 elif event.key == pygame.K_DOWN:
-                    player1.changespeed(0, 3)
+                    player1.change_speed(0, 3)
                 elif event.key == pygame.K_SPACE:
                     bomb = Bomb(player1)
                     all_sprite_list.add(bomb)
@@ -304,13 +278,13 @@ def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall
                     last_bomb_time = pygame.time.get_ticks()
 
                 elif event.key == pygame.K_a:
-                    player2.changespeed(-3, 0)
+                    player2.change_speed(-3, 0)
                 elif event.key == pygame.K_d:
-                    player2.changespeed(3, 0)
+                    player2.change_speed(3, 0)
                 elif event.key == pygame.K_w:
-                    player2.changespeed(0, -3)
+                    player2.change_speed(0, -3)
                 elif event.key == pygame.K_s:
-                    player2.changespeed(0, 3)
+                    player2.change_speed(0, 3)
                 elif event.key == pygame.K_q:
                     bomb = Bomb(player2)
                     all_sprite_list.add(bomb)
@@ -322,22 +296,22 @@ def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
-                    player1.changespeed(3, 0)
+                    player1.change_speed(3, 0)
                 elif event.key == pygame.K_RIGHT:
-                    player1.changespeed(-3, 0)
+                    player1.change_speed(-3, 0)
                 elif event.key == pygame.K_UP:
-                    player1.changespeed(0, 3)
+                    player1.change_speed(0, 3)
                 elif event.key == pygame.K_DOWN:
-                    player1.changespeed(0, -3)
+                    player1.change_speed(0, -3)
 
                 elif event.key == pygame.K_a:
-                    player2.changespeed(3, 0)
+                    player2.change_speed(3, 0)
                 elif event.key == pygame.K_d:
-                    player2.changespeed(-3, 0)
+                    player2.change_speed(-3, 0)
                 elif event.key == pygame.K_w:
-                    player2.changespeed(0, 3)
+                    player2.change_speed(0, 3)
                 elif event.key == pygame.K_s:
-                    player2.changespeed(0, -3)
+                    player2.change_speed(0, -3)
 
 
         screen.blit(background, (0, 0))
@@ -401,13 +375,13 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
             elif event.type == pygame.KEYDOWN:
                 # TODO functionize
                 if event.key == pygame.K_LEFT:
-                    player1.changespeed(-3, 0)
+                    player1.change_speed(-3, 0)
                 elif event.key == pygame.K_RIGHT:
-                    player1.changespeed(3, 0)
+                    player1.change_speed(3, 0)
                 elif event.key == pygame.K_UP:
-                    player1.changespeed(0, -3)
+                    player1.change_speed(0, -3)
                 elif event.key == pygame.K_DOWN:
-                    player1.changespeed(0, 3)
+                    player1.change_speed(0, 3)
                 elif event.key == pygame.K_SPACE:
                     bomb = Bomb(player1)
                     all_sprite_list.add(bomb)
@@ -418,13 +392,13 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
-                    player1.changespeed(3, 0)
+                    player1.change_speed(3, 0)
                 elif event.key == pygame.K_RIGHT:
-                    player1.changespeed(-3, 0)
+                    player1.change_speed(-3, 0)
                 elif event.key == pygame.K_UP:
-                    player1.changespeed(0, 3)
+                    player1.change_speed(0, 3)
                 elif event.key == pygame.K_DOWN:
-                    player1.changespeed(0, -3)
+                    player1.change_speed(0, -3)
 
         screen.blit(background, (0, 0))
         all_sprite_list.update()

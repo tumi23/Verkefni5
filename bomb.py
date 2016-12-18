@@ -17,30 +17,27 @@ class Bomb(pygame.sprite.Sprite):
         self.image.set_colorkey((255, 0, 255))
         self.image.blit(bomb, (0, 0))
         self.rect = self.image.get_rect()
+        # This if statement checks where the bomb is being placed an aligns it to a block
+        # to the left or right depending on which its closer to
         if player.rect.x % 60 == 0:
             self.rect.x = player.rect.x
-
             y_mod = player.rect.y % 60
             y_value = min((60 - y_mod), y_mod)
             if y_mod < 30:
                 self.rect.y = player.rect.y - y_value
             else:
                 self.rect.y = player.rect.y + y_value
-
         else:
             self.rect.y = player.rect.y
-
             x_mod = player.rect.x % 60
             x_value = min((60 - x_mod), x_mod)
             if x_mod < 30:
                 self.rect.x = player.rect.x - x_value
             else:
                 self.rect.x = player.rect.x + x_value
-
         self.time = pygame.time.get_ticks()
 
     def detonate(self, level, brickWall_list, all_sprite_list, player):
-
         return [BlastX(self, level, brickWall_list, all_sprite_list, player), BlastY(self, level, brickWall_list, all_sprite_list, player)]
 
 
