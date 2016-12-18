@@ -1,4 +1,5 @@
 import pygame, pygame.mixer, time
+from pygame import *
 from player import Player
 from bomb import Bomb
 from init_level import create_walls, create_random_brick_walls, init_level_board, init_coordinates, create_random_enemies
@@ -220,6 +221,29 @@ def game_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+        screen.fill(WHITE)
+        title = pygame.font.Font('freesansbold.ttf', 115)
+        t1, t2 = text_objects("BomberMan", title)
+        t2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2)-150)
+        screen.blit(t1, t2)
+
+        menu_item_button("1 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2)-75, 130, 50, GREEN, BR_GREEN, start_game_one_player_game)
+        menu_item_button("2 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2), 130, 50, GREEN, BR_GREEN, start_game_two_player_game)
+        menu_item_button("Highscores", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+75, 130, 50, GREEN, BR_GREEN, high_score_screen)
+        menu_item_button("Quit", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+150, 130, 50, RED, BR_RED, quit_game)
+
+        pygame.display.update()
+        clock.tick(15)
+
+def playagain_menu():
+    global  NUMBER_OF_ENEMIES_BEGINNING
+    NUMBER_OF_ENEMIES_BEGINNING += 2
+    while True:
+        for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
 
         screen.fill(WHITE)
         title = pygame.font.Font('freesansbold.ttf', 115)
@@ -227,17 +251,16 @@ def game_menu():
         t2.center = ((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2)-150)
         screen.blit(t1, t2)
 
+        myfont = pygame.font.Font('freesansbold.ttf', 100)
+        label = myfont.render("Score: " + str(current_score), 30, (255, 255, 255))
+        screen.blit(label, (250, SCREEN_HEIGHT - 500))
         #TODO one player og highscore
-        menu_item_button("1 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2)-75, 130, 50, GREEN, BR_GREEN, start_game_one_player_game)
-        menu_item_button("2 Player", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2), 130, 50, GREEN, BR_GREEN, start_game_two_player_game)
-        menu_item_button("Highscores", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+75, 130, 50, GREEN, BR_GREEN, high_score_screen)
-        menu_item_button("Quit", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+150, 130, 50, RED, BR_RED, quit_game)
+        menu_item_button("Play Again?", (SCREEN_WIDTH / 2 )-50, (SCREEN_HEIGHT / 2), 100, 50, GREEN, BR_GREEN, start_game_one_player_game)
+        menu_item_button("Quit to main menu?", (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)+75, 100, 50, RED, BR_RED, game_menu())
 
 
         pygame.display.update()
         clock.tick(15)
-
-
 
 def game_loop_two_player(screen, background, clock, bombs_list, level, brickWall_list, all_sprite_list, player1, player2, blast_list):
     carryOnMyWaywardSon = True
@@ -412,14 +435,14 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
                 elif event.key == pygame.K_DOWN:
                     player1.changespeed(0, -3)
 
-
         screen.blit(background, (0, 0))
         all_sprite_list.update()
-
+        myfont = pygame.font.SysFont("freesansbold.ttf", 30)
+        label = myfont.render("Score: " + str(current_score), 30, (0, 0, 0))
         all_sprite_list.draw(screen)
+        screen.blit(label, (30, SCREEN_HEIGHT-50))
 
         pygame.display.flip()
-
         clock.tick(60)
 
         if not carryOnMyWaywardSon and not won_game:
@@ -428,9 +451,5 @@ def game_loop_one_player(screen, background, clock, bombs_list, level, brickWall
             table.insert({'value': current_score, 'Name': name_of_player})
             current_score = 0
 
-
-
 clock = pygame.time.Clock()
-
-game_menu()
-
+playagain_menu()
