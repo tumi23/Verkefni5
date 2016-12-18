@@ -1,8 +1,5 @@
 import pygame, pygame.mixer
 
-from walls import BrickWall
-from player import Player
-
 x, y = 0, 0
 coordinates = []
 for i in range(13):
@@ -20,8 +17,6 @@ class BlastY(pygame.sprite.Sprite):
     def __init__(self, bomb, level, brickWall_list, all_sprite_list, player):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
-
-
         bx = bomb.rect.x
         by = bomb.rect.y
         bi = 0
@@ -63,13 +58,6 @@ class BlastY(pygame.sprite.Sprite):
                 break
             left = coordinates[bi][bj - i]
 
-        print('left')
-        print (left)
-        print('right')
-        print(right)
-
-        print(coordinates)
-
         self.image = pygame.Surface([right[0]-left[0]+60, 60])
         blastY = pygame.image.load("sprites/bomb/blastY.png")
         blastY = pygame.transform.scale(blastY, ([right[0]-left[0]+60, 60]))
@@ -83,12 +71,12 @@ class BlastY(pygame.sprite.Sprite):
         self.rect.x = left[0]
         self.rect.y = left[1]
 
+
 class BlastX(pygame.sprite.Sprite):
 
     def __init__(self, bomb, level, brickWall_list, all_sprite_list, player):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
-
 
         bx = bomb.rect.x
         by = bomb.rect.y
@@ -130,10 +118,6 @@ class BlastX(pygame.sprite.Sprite):
                 break
             top = coordinates[bi - i][bj]
 
-        print('top')
-        print(top)
-        print('bottom')
-        print(bottom)
         self.image = pygame.Surface([60, bottom[1]-top[1]+60])
         blastX = pygame.image.load("sprites/bomb/blastX.png")
         blastX = pygame.transform.scale(blastX, ([60, bottom[1]-top[1]+60]))

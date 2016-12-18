@@ -2,6 +2,8 @@ from walls import BrickWall, Wall
 
 from random import randint
 from enemy import Enemy
+
+
 def create_walls(SCREEN_WIDTH, SCREEN_HEIGHT, wall_list, all_sprite_list):
     # Left
     tY = 0

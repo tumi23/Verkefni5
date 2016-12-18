@@ -1,8 +1,7 @@
 import pygame, pygame.font, pygame.event, pygame.draw
-import string
 from pygame.locals import *
-
 #3rd party input box
+
 
 def get_key():
   while 1:
@@ -12,8 +11,9 @@ def get_key():
     else:
       pass
 
+
 def display_box(screen, message):
-  "Print a message in a box in the middle of the screen"
+  #Prints a box for inputting name of player
   fontobject = pygame.font.Font(None,18)
   pygame.draw.rect(screen, (0,0,0),
                    ((screen.get_width() / 2) - 100,
@@ -28,8 +28,8 @@ def display_box(screen, message):
                 ((screen.get_width() / 2) - 100, (screen.get_height() / 2) - 10))
   pygame.display.flip()
 
+
 def ask(screen, question):
-  "ask(screen, question) -> answer"
   pygame.font.init()
   current_string = []
   display_box(screen, question + ": " + "".join(current_string))

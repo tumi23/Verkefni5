@@ -1,5 +1,5 @@
-import pygame, pygame.mixer
-
+import pygame
+import pygame.mixer
 from blast import BlastX, BlastY
 
 bomb = pygame.image.load("sprites/bomb/bomb.png")

@@ -1,7 +1,8 @@
-import pygame, math, pygame.mixer
+import pygame
+import pygame.mixer
 
-idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_up.png")
-idleDown = pygame.transform.scale(idleDown, (60, 60))
+enemy = pygame.image.load("sprites/bomberman/bomberman_enemy.png")
+enemy = pygame.transform.scale(enemy, (60, 60))
 
 class Enemy(pygame.sprite.Sprite):
     # Constructor function
@@ -14,7 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image.convert()
         self.image.fill((255, 0, 255))
         self.image.set_colorkey((255, 0, 255))
-        self.image.blit(idleDown, (0, 0))
+        self.image.blit(enemy, (0, 0))
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -33,7 +34,6 @@ class Enemy(pygame.sprite.Sprite):
         self.change_y += y
 
         if x == 0 or y == 0:
-            print('no speed')
             self.reverse_direction()
 
     def update(self):

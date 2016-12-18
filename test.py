@@ -7,10 +7,7 @@ from input_box import *
 from tinydb import TinyDB, where
 
 db = TinyDB('db/db.json')
-#db.purge_table('HighScore')
 table = db.table('HighScore')
-#table.insert({'value': 1000, 'Name': 'MyName'})
-#print(table.all())
 
 # -- Global constants
 BLACK = (255,255,255)
@@ -26,8 +23,6 @@ current_score = 0
 won_game = False
 
 # Sprites
-idleDown = pygame.image.load("sprites/bomberman/bomberman_idle_down.png")
-idleDown = pygame.transform.scale(idleDown, (60, 60))
 wallBlock = pygame.image.load("sprites/blocks/wall_block.png")
 wallBlock = pygame.transform.scale(wallBlock, (60, 60))
 brickBlock = pygame.image.load("sprites/blocks/brick_block.png")
@@ -75,7 +70,6 @@ def text_objects(text, font):
 def menu_item_button(message, x_coordinates, y_coordinates, widht, height, inactive_color, active_color, action=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
-    print(click)
 
     if x_coordinates + widht > mouse[0] > x_coordinates and y_coordinates + height > mouse[1] > y_coordinates:
         pygame.draw.rect(screen, active_color, (x_coordinates, y_coordinates, widht, height))
@@ -173,19 +167,14 @@ def high_score_screen():
     global table
     r = []
     for i in table.all():
-        print(i['value'])
-        print(i['Name'])
         r.append((i['Name'], i['value']))
     l = table.all()
-    print (r)
     p = sorted(r, key=lambda x: (-x[1], x[0]))
-    print(p)
 
 
 
     while True:
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
@@ -217,7 +206,6 @@ def game_menu():
     global  NUMBER_OF_ENEMIES_BEGINNING, won_game
     while True:
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
@@ -225,7 +213,7 @@ def game_menu():
         if won_game:
             won_game = False
             NUMBER_OF_ENEMIES_BEGINNING += 2
-            start_game_one_player_game
+            start_game_one_player_game()
         screen.fill(WHITE)
         title = pygame.font.Font('freesansbold.ttf', 115)
         t1, t2 = text_objects("BomberMan", title)
@@ -245,7 +233,6 @@ def playagain_menu():
     #NUMBER_OF_ENEMIES_BEGINNING += 2
     while True:
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
